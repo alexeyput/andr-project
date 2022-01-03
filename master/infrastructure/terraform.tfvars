@@ -1,0 +1,7 @@
+cidr_block = "10.1.0.0/16"
+public_cidr_block = "10.1.10.0/24"
+avail_zone = "eu-central-1a"
+aws_region = "eu-central-1"
+env_prefix = "master"
+instance_type = "t2.micro"
+keyname = "AWS-default-key"
