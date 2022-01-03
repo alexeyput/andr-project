@@ -1,0 +1,60 @@
+#!groovy
+    properties([disableConcurrentBuilds()]) //Enable only one build of thid pipeline at the same time
+
+pipeline {
+        agent any
+        parameters {
+            string(name: 'VERSION', defaultvalue:'', description: 'version to deploy on prod') // you need to enter the parameter manually
+            choice(name: 'VERSION', choices: ['1,1', '1.2', '1.3'], description: 'what version?') // you have a predefined set of parameters
+            booleanParam(name: 'executeTests', defaultValue: true, description: 'needs test?') // boolean choice
+        }
+        options {
+          timestamps()
+        }
+
+
+        stages{
+          stage("Selection stage") {
+              when {
+                  expression {
+                      params.executeTests == true
+                  }
+              }
+            steps{
+              echo "##### Selection stage... ####"
+            }
+          }
+          stage("Stage 2 - Input parameters") {
+              input {
+                  message "Select the env. to deploy to"
+                  ok "Done"
+                  parameters{
+                      choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'what environment to deploy to?')
+                  }
+              }
+            steps {
+              echo "##### Stage 2... ####"
+            }
+          }
+        }
+    stage("Stage 3 for \"dev\" branch only") {
+        when {
+            expression {
+                    BRANCH_NAME == 'dev'
+                    // all vars can be found http://jenkins-server:8080/env-vars.html/
+            }
+        }
+        steps {
+            echo "##### Stage 2... ####"
+    }
+}
+
+post {
+        always {
+            // run always
+        }
+        failure {
+            // run n case of failure only
+        }
+    }
+}
